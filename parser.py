@@ -5,6 +5,11 @@ import os
 import argparse
 from datasets import load_dataset
 import subprocess
+import logging
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
+
 
 PY_DS_PATH = 'data/py_ds.json'
 KT_DS_PATH = 'data/kt_ds.json'
@@ -23,9 +28,9 @@ def clone_github_repo(repo_url, destination_path):
 
 def parse_kt_dataset(output_file):
     if os.path.exists(output_file):
-        print('Kotlin data already parsed!')
+        logger.info('Kotlin data already parsed. Aborting.')
     else:
-        print('Parsing Kotlin data!')
+        logger.info('Kotlin dataset not found. Starting parsing.')
         if True:
             clone_github_repo(KT_REPO_LINK, DATA_FOLDER)
 
@@ -51,9 +56,9 @@ def parse_kt_dataset(output_file):
 
 def parse_py_dataset(output_file):
     if os.path.exists(output_file):
-        print('Python data already parsed!')
+        logger.info('Python data already parsed. Aborting.')
     else:
-        print('Parsing Python data!')
+        logger.info('Python dataset not found. Starting parsing.')
         random.seed(42)
 
         ds = load_dataset('microsoft/code_method_completion')
