@@ -14,9 +14,16 @@ There are two datasets used in this project:
 The datasets adhere to the same format:
 ```
 {
-  "input": "",
-  "labels": ""
+  "input": "<s> from __future__ import absolute_import , division , print_function <EOL> from . _ithreads import AlreadyQuit <EOL> class Quit ( object ) : <EOL>",
+  "labels": " "def __init__ ( self ) :""
 }
+```
+
+## Dataset parsing
+
+You can use the following code snippet to run datasets parsing:
+```shell
+python parser.py --type python kotlin
 ```
 
 ## Evaluation
@@ -25,9 +32,7 @@ To evaluate the code completion predictions, two metrics are calculated: Levenst
 
 You can use the following code snippet to run evaluations:
 ```shell
-export <VARS>
-
-python evaluator/main.py <VARS>
+python evaluator.py --answers path/to/answers --predictions path/to/predictions
 ```
 
 ## Fine tuning pipeline
@@ -35,9 +40,8 @@ python evaluator/main.py <VARS>
 You can use the following code snippet to run fine tuning:
 
 ```shell
-export <VARS>
-
-python sft/main.py <VARS>
+python trainer.py --model_name microsoft/phi-1_5 --num_train_epochs 10 --train_batch_size 2 \
+  --eval_batch_size 2 --learning_rate 0.00001 --gradient_accumulation_steps 2
 ```
 
 ## Results
@@ -53,7 +57,7 @@ python sft/main.py <VARS>
 
 | Model                                                 |     EM     |  Edit similarity  |
 | ----------------------------------------------------- | :--------: | :---------------: |
-| Phi-1.5 pre-train                                           |    X   |       X       |
+| Phi-1.5 pre-train                                           |    X   |      X        |
 | Phi-1.5 fine-tuned                                           |    X   |       X       |
 
 
