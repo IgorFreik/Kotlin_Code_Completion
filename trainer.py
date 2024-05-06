@@ -4,6 +4,8 @@ from torch.utils.tensorboard import SummaryWriter
 import argparse
 from utils import load_kt_dataset
 
+WEIGHTS_DIR = 'weights/'
+
 
 class TensorBoardCallback(TrainerCallback):
     def __init__(self, writer: SummaryWriter):
@@ -32,6 +34,7 @@ def main():
     parser.add_argument('--eval_batch_size', type=int, default=2)
     parser.add_argument('--learning_rate', type=float, default=1e-5)
     parser.add_argument('--num_train_epochs', type=int, default=3)
+    parser.add_argument('--gradient_accumulation_steps', type=int, default=2)
     args = parser.parse_args()
 
     ds_kt = load_kt_dataset()
@@ -45,18 +48,17 @@ def main():
     writer = SummaryWriter()
 
     training_args = Seq2SeqTrainingArguments(
-        output_dir='./output_dir',
+        output_dir=WEIGHTS_DIR,
         predict_with_generate=True,
         evaluation_strategy="epoch",
         per_device_train_batch_size=args.train_batch_size,
         per_device_eval_batch_size=args.eval_batch_size,
         learning_rate=args.learning_rate,
         save_steps=10_000,
-        save_total_limit=2,
         num_train_epochs=args.num_training_epochs,
+        gradient_accumulation_steps=args.gradient_accumulation_steps,
         logging_dir="./logs",
         report_to="tensorboard",
-
     )
 
     trainer = Seq2SeqTrainer(
