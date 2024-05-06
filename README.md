@@ -23,7 +23,7 @@ The datasets adhere to the same format:
 
 You can use the following code snippet to run datasets parsing:
 ```shell
-python parser.py --type python kotlin
+python data_parser.py --type python kotlin
 ```
 
 ## Evaluation

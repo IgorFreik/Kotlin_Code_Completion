@@ -82,15 +82,16 @@ def parse_py_dataset(output_file):
 
 def main():
     parser = argparse.ArgumentParser(description='')
-    parser.add_argument('--type', required=True, help="Type of dataset to be parsed [python|kotlin]")
+    parser.add_argument('--type', required=True, nargs='+', help="Type of dataset to be parsed [python|kotlin]")
     args = parser.parse_args()
 
-    assert args.type in ['python', 'kotlin']
+    for ds_type in args.type:
+        assert ds_type in ['python', 'kotlin']
 
-    if args.type == 'kotlin':
-        parse_kt_dataset(KT_DS_PATH)
-    else:
-        parse_py_dataset(PY_DS_PATH)
+        if ds_type == 'kotlin':
+            parse_kt_dataset(KT_DS_PATH)
+        else:
+            parse_py_dataset(PY_DS_PATH)
 
 
 if __name__ == '__main__':
