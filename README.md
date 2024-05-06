@@ -3,7 +3,7 @@
 
 ## Task
 
-This project aims to fine-tune a model (Phi-1.5) on the code completion task in the Kotlin language. 
+This project aims to explore on teh performance improvement of fine-tuning LLMs T LLMs (specifically Phi-1.5) for the code completion task in underrepresented programming languages (specifically Kotlin language). 
 
 ## Dataset
 
@@ -53,7 +53,7 @@ python sft/main.py <VARS>
 
 | Model                                                 |     EM     |  Edit similarity  |
 | ----------------------------------------------------- | :--------: | :---------------: |
-|  Phi-1.5 pre-train                                           |    X   |       X       |
+| Phi-1.5 pre-train                                           |    X   |       X       |
 | Phi-1.5 fine-tuned                                           |    X   |       X       |
 
 
