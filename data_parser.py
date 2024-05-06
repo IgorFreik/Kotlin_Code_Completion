@@ -81,7 +81,7 @@ def parse_py_dataset(output_file):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='')
+    parser = argparse.ArgumentParser(description='Parser to fetch data from Py150 dataset and scrape a custom Kotlin dataset.')
     parser.add_argument('--type', required=True, nargs='+', help="Type of dataset to be parsed [python|kotlin]")
     args = parser.parse_args()
 
