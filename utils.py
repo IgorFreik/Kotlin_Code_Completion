@@ -1,5 +1,6 @@
 from tqdm import tqdm
 import numpy as np
+from parser import KT_DS_PATH
 
 
 def single_predict(model, tokenizer, input, token_lim=1000):
@@ -36,4 +37,18 @@ def evaluate(model, tokenizer, dataset, test_size=500):
     print(f'Mean Levenshtein distance: {np.array(results["edit_sim"]).mean()}.')
     print(f'Mean EM: {np.array(results["EM"]).mean()}.')
     return results
+
+
+def load_kt_dataset():
+    ds_kt = load_dataset('json', data_files=KT_DS_PATH))['train']\
+        .rename_column('target', 'labels')\
+        .shard(num_shards=40, index=0)
+
+    ds_kt = ds_kt.train_test_split(test_size=0.3)
+
+    ds_kt_remaining = ds_kt['test'].train_test_split(test_size=0.5)
+
+    ds_kt['eval'] = ds_kt_remaining['train']
+    ds_kt['test'] = ds_kt_remaining['test']
+    return ds_kt
 

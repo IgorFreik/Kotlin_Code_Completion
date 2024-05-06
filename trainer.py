@@ -1,9 +1,8 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from transformers import Seq2SeqTrainingArguments, Seq2SeqTrainer,DataCollatorForSeq2Seq, TrainerCallback
 from torch.utils.tensorboard import SummaryWriter
-import json
-import os
 import argparse
+from utils import load_kt_dataset
 
 
 class TensorBoardCallback(TrainerCallback):
@@ -14,20 +13,6 @@ class TensorBoardCallback(TrainerCallback):
         if logs:
             for key, value in logs.items():
                 self.writer.add_scalar(f"trainer/{key}", value, state.epoch)
-
-
-def load_kt_dataset():
-    ds_kt = json.load(open(os.path.join(os.getcwd(), '../data/kt_code_completion.json')))
-    ds_kt = load_dataset('json', data_files='./kt_code_completion_dataset.json')['train'].rename_column('target',
-                                                                                                        'labels').shard(
-        num_shards=40, index=0)
-    ds_kt = ds_kt.train_test_split(test_size=0.3)
-
-    ds_kt_remaining = ds_kt['test'].train_test_split(test_size=0.5)
-
-    ds_kt['eval'] = ds_kt_remaining['train']
-    ds_kt['test'] = ds_kt_remaining['test']
-    return ds_kt
 
 
 def preprocess_function(examples):
