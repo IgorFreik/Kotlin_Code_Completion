@@ -1,8 +1,22 @@
-# Code copied from here:
+# Code taken from this source:
 # https://github.com/microsoft/CodeXGLUE/blob/main/Code-Code/CodeCompletion-line/evaluator/evaluator.py
 
 from fuzzywuzzy import fuzz
 import argparse
+import logging
+import re
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
+
+
+def post_process(code):
+    code = code.replace("<NUM_LIT>", "0").replace("<STR_LIT>", "").replace("<CHAR_LIT>", "")
+    pattern = re.compile(r"<(STR|NUM|CHAR)_LIT:(.*?)>", re.S)
+    lits = re.findall(pattern, code)
+    for lit in lits:
+        code = code.replace(f"<{lit[0]}_LIT:{lit[1]}>", lit[1])
+    return code
 
 
 def main():
