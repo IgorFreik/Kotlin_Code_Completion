@@ -26,8 +26,12 @@ def preprocess_function(examples):
 
 
 def main():
-    parser = argparse.ArgumentParser(description='')
-    parser.add_argument('--model_name', required=True)
+    parser = argparse.ArgumentParser(description='Fine-tuner for code completion on custom Kotlin dataset.')
+    parser.add_argument('--model_name', type=str, default='microsoft/phi-1_5', help='Base model for fine-tuning.')
+    parser.add_argument('--train_batch_size', type=int, default=2)
+    parser.add_argument('--eval_batch_size', type=int, default=2)
+    parser.add_argument('--learning_rate', type=float, default=1e-5)
+    parser.add_argument('--num_train_epochs', type=int, default=3)
     args = parser.parse_args()
 
     ds_kt = load_kt_dataset()
@@ -44,12 +48,12 @@ def main():
         output_dir='./output_dir',
         predict_with_generate=True,
         evaluation_strategy="epoch",
-        per_device_train_batch_size=1,
-        per_device_eval_batch_size=4,
-        learning_rate=1e5,
+        per_device_train_batch_size=args.train_batch_size,
+        per_device_eval_batch_size=args.eval_batch_size,
+        learning_rate=args.learning_rate,
         save_steps=10_000,
         save_total_limit=2,
-        num_train_epochs=3,
+        num_train_epochs=args.num_training_epochs,
         logging_dir="./logs",
         report_to="tensorboard",
 
