@@ -5,6 +5,7 @@ from fuzzywuzzy import fuzz
 import argparse
 import logging
 import re
+import json
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -35,7 +36,7 @@ def main():
     edit_sim = 0.0
     for pred, gt in zip(preds, gts):
         pred = post_process(pred.strip())
-        gt = post_process(json.loads(gt)["gt"])
+        gt = post_process(gt.strip())
         edit_sim += fuzz.ratio(pred, gt)
         if pred.split() == gt.split():
             EM += 1
