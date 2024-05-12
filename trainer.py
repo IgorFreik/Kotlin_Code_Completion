@@ -3,6 +3,7 @@ from transformers import Seq2SeqTrainingArguments, Seq2SeqTrainer,DataCollatorFo
 from torch.utils.tensorboard import SummaryWriter
 import argparse
 from utils import load_kt_dataset
+from functools import partial
 
 WEIGHTS_DIR = 'weights/'
 
@@ -17,7 +18,7 @@ class TensorBoardCallback(TrainerCallback):
                 self.writer.add_scalar(f"trainer/{key}", value, state.epoch)
 
 
-def preprocess_function(examples):
+def preprocess_function(tokenizer, examples):
     model_inputs = tokenizer(examples["input"], truncation=True)
 
     with tokenizer.as_target_tokenizer():
@@ -43,7 +44,7 @@ def main():
     tokenizer = AutoTokenizer.from_pretrained(args.model_name)
     tokenizer.add_special_tokens({'pad_token': '[PAD]'})
 
-    tokenized_datasets = ds_kt.map(preprocess_function, batched=True)
+    tokenized_datasets = ds_kt.map(partial(preprocess_function, tokenizer), batched=True)
 
     writer = SummaryWriter()
 
