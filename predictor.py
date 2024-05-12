@@ -12,7 +12,15 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 
-def single_predict(model, tokenizer, input, token_lim=1000):
+def single_predict(model: AutoModelForCausalLM, tokenizer: AutoTokenizer, input: str, token_lim: int = 1000):
+    """
+    A function to make predictions given model, tokenizer, max tokens length and the input string.
+    :param model: The model to make predicitons with.
+    :param tokenizer: The tokenizer for the model to make predictins with.
+    :param input: The input string with code prefix.
+    :param token_lim: The max tokens to input into the model.
+    :return: The predicted string (code line).
+    """
     tokens = tokenizer(post_process(input), return_tensors="pt", return_attention_mask=False)
     input_len = len(tokens['input_ids'][0])
 
