@@ -50,14 +50,14 @@ python trainer.py --model_name microsoft/phi-1_5 --num_train_epochs 10 --train_b
 
 | Model                                                 |     EM     |  Edit similarity  |
 | ----------------------------------------------------- | :--------: | :---------------: |
-|  Phi-1.5 pre-train                                           |    X   |      X       |
+|  Phi-1.5 pre-train                                           |    0.203   |      40.35       |
 | Phi-1.5 fine-tuned                                           |   X   |       X       |
 
 ### Custom Kotlin
 
 | Model                                                 |     EM     |  Edit similarity  |
 | ----------------------------------------------------- | :--------: | :---------------: |
-| Phi-1.5 pre-train                                           |    X   |      X        |
+| Phi-1.5 pre-train                                           |    0.093   |      45.832        |
 | Phi-1.5 fine-tuned                                           |    X   |       X       |
 
 
