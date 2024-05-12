@@ -1,11 +1,12 @@
 import json
 import random
 from tqdm import tqdm
-import os
 import argparse
 from datasets import load_dataset
-import subprocess
 import logging
+import requests
+import os
+import zipfile
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -13,26 +14,48 @@ logging.basicConfig(level=logging.INFO)
 
 PY_DS_PATH = 'data/py_ds.json'
 KT_DS_PATH = 'data/kt_ds.json'
-KT_FILES_DIR = 'data/kt-master'
-KT_REPO_LINK = 'https://github.com/jetbrains/kotlin.git'
+KT_FILES_DIR = 'data/kotlin-master'
+KT_REPO_NAME = 'kotlin'
+KT_REPO_OWNER = 'jetbrains'
 DATA_FOLDER = 'data'
 
 
-def clone_github_repo(repo_url, destination_path):
-    try:
-        subprocess.run(["git", "clone", repo_url, destination_path], check=True)
-        print("Repository cloned successfully!")
-    except subprocess.CalledProcessError as e:
-        print(f"Failed to clone repository: {e}")
+def download_github_repo(repo_owner, repo_name, destination_path):
+    """
+    Function to clone a github repository to a given local path given it's web path.
+    :param repo_owner: The name of the github repo owner.
+    :param repo_name: The name of the github repo.
+    :param destination_path: The local path to store the cloned repo.
+    """
+    zip_url = f"https://github.com/{repo_owner}/{repo_name}/archive/refs/heads/master.zip"
+    response = requests.get(zip_url)
+    if response.status_code == 200:
+        os.makedirs(destination_path, exist_ok=True)
+
+        zip_file_path = os.path.join(destination_path, f"{repo_name}.zip")
+        with open(zip_file_path, "wb") as zip_file:
+            zip_file.write(response.content)
+
+        with zipfile.ZipFile(zip_file_path, "r") as zip_ref:
+            zip_ref.extractall(destination_path)
+        os.remove(zip_file_path)
+        print("Successfully downloaded the repo!")
+    else:
+        print("Failed to download repository!")
 
 
 def parse_kt_dataset(output_file):
+    """
+    Function to parse a Kotlin dataset from the jetbrains/Kotlin github repository
+    and prepare it for the task of code completion.
+    :param output_file: The string file path to store the downloaded dataset.
+    """
     if os.path.exists(output_file):
         logger.info('Kotlin data already parsed. Aborting.')
     else:
         logger.info('Kotlin dataset not found. Starting parsing.')
-        if True:
-            clone_github_repo(KT_REPO_LINK, DATA_FOLDER)
+        if not os.path.exists(KT_FILES_DIR):
+            download_github_repo(KT_REPO_NAME, KT_REPO_OWNER, DATA_FOLDER)
 
         random.seed(42)
         dataset = []
@@ -55,6 +78,10 @@ def parse_kt_dataset(output_file):
 
 
 def parse_py_dataset(output_file):
+    """
+    Function to download the python dataset PY150 and prepare it for the task of code completion.
+    :param output_file: The string file path to store the downloaded dataset.
+    """
     if os.path.exists(output_file):
         logger.info('Python data already parsed. Aborting.')
     else:
