@@ -10,7 +10,7 @@ import requests
 from datasets import load_dataset
 from tqdm import tqdm
 
-import config
+from . import config
 
 # Configure logging
 logger = logging.getLogger(__name__)

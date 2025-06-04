@@ -8,9 +8,9 @@ import torch
 from tqdm import tqdm
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
-import config
-from evaluator import post_process
-from utils import load_kt_dataset
+from . import config
+from .evaluator import post_process
+from .utils import load_kt_dataset
 
 # Configure logging
 logger = logging.getLogger(__name__)

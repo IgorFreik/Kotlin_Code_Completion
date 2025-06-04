@@ -1,6 +1,6 @@
 # Kotlin Code Completion with Phi-1.5
 
-A Python project for fine-tuning language models (specifically Phi-1.5) on code completion tasks for underrepresented programming languages, with a focus on Kotlin.
+A Python package for fine-tuning language models (specifically Phi-1.5) on code completion tasks for underrepresented programming languages, with a focus on Kotlin.
 
 ## Overview
 
@@ -39,7 +39,6 @@ The project uses two metrics as suggested by CodeXGLUE:
 | Phi-1.5 (pre-trained) | 9.3% | 45.83 |
 | Phi-1.5 (fine-tuned) | TBD | TBD |
 
-
 ## Project Structure
 
 ```
@@ -58,39 +57,60 @@ The project uses two metrics as suggested by CodeXGLUE:
 
 ## Usage
 
-### 1. Dataset Preparation
+### Quick Start with Scripts
 
-Parse datasets for training and evaluation:
+```bash
+# Parse datasets
+python scripts/parse_data.py --type python kotlin
+
+# Train a model
+python scripts/train.py --model_name microsoft/phi-1_5 --num_train_epochs 3
+
+# Generate predictions
+python scripts/predict.py --model_name microsoft/phi-1_5 --test_size 100
+
+# Evaluate predictions
+python scripts/evaluate.py --answers ground_truth.json --predictions predictions.json
+```
+
+### Using as an Installed Package
+
+After installation with `pip install -e .`, you can use the command-line tools:
+
+```bash
+# Parse datasets
+kt-parse --type python kotlin
+
+# Train a model
+kt-train --model_name microsoft/phi-1_5 --num_train_epochs 3
+
+# Generate predictions
+kt-predict --model_name microsoft/phi-1_5 --test_size 100
+
+# Evaluate predictions
+kt-evaluate --answers ground_truth.json --predictions predictions.json
+```
+
+### Detailed Usage Examples
+
+#### 1. Dataset Preparation
 
 ```bash
 # Parse both Python and Kotlin datasets
-python data_parser.py --type python kotlin
+python scripts/parse_data.py --type python kotlin
 
 # Parse only Kotlin dataset
-python data_parser.py --type kotlin
-
-# Parse only Python dataset
-python data_parser.py --type python
+python scripts/parse_data.py --type kotlin
 ```
 
-The datasets follow this format:
-```json
-{
-  "input": "function header() {\n    val x = 10\n    val y =",
-  "labels": " 20"
-}
-```
-
-### 2. Model Training
-
-Fine-tune a model using the prepared datasets:
+#### 2. Model Training
 
 ```bash
 # Basic training with default parameters
-python trainer.py --model_name microsoft/phi-1_5
+python scripts/train.py --model_name microsoft/phi-1_5
 
 # Advanced training with custom parameters
-python trainer.py \
+python scripts/train.py \
     --model_name microsoft/phi-1_5 \
     --num_train_epochs 10 \
     --train_batch_size 4 \
@@ -99,30 +119,26 @@ python trainer.py \
     --gradient_accumulation_steps 2
 ```
 
-### 3. Generate Predictions
-
-Generate predictions using a trained model:
+#### 3. Generate Predictions
 
 ```bash
 # Using fine-tuned model
-python predictor.py \
+python scripts/predict.py \
     --model_name microsoft/phi-1_5 \
     --model_path weights/pytorch_model.bin \
     --test_size 100
 
 # Using base model only
-python predictor.py \
+python scripts/predict.py \
     --model_name microsoft/phi-1_5 \
     --test_size 100
 ```
 
-### 4. Evaluation
-
-Evaluate predictions against ground truth:
+#### 4. Evaluation
 
 ```bash
 # Evaluate predictions
-python evaluator.py \
+python scripts/evaluate.py \
     --answers path/to/ground_truth.json \
     --predictions path/to/predictions.json \
     --prediction_format json \
@@ -131,10 +147,30 @@ python evaluator.py \
 
 ## Configuration
 
-All project settings are centralized in `config.py`. Key configurations include:
+All project settings are centralized in `src/kotlin_completion/config.py`. Key configurations include:
 
 - **Dataset paths**: `KT_DS_PATH`, `PY_DS_PATH`
 - **Model settings**: `DEFAULT_MODEL_NAME`, `WEIGHTS_DIR`
 - **Training hyperparameters**: `DEFAULT_LEARNING_RATE`, `DEFAULT_NUM_EPOCHS`
 - **Generation settings**: `DEFAULT_TOKEN_LIMIT`, `DEFAULT_MAX_NEW_TOKENS`
 
+## Development
+
+### Running Tests
+
+```bash
+# Run all tests
+python -m pytest tests/
+
+# Run specific test
+python -m pytest tests/test_config.py
+```
+
+### Package Structure
+
+The project follows Python packaging best practices:
+
+- **`src/` layout**: All source code is in the `src/` directory
+- **Proper imports**: Uses relative imports within the package
+- **Entry points**: Console scripts for easy command-line usage
+- **Tests**: Separate test directory with proper test structure

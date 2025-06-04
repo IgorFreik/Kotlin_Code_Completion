@@ -14,8 +14,8 @@ from transformers import (
     TrainerCallback
 )
 
-import config
-from utils import load_kt_dataset
+from . import config
+from .utils import load_kt_dataset
 
 # Configure logging
 logger = logging.getLogger(__name__)

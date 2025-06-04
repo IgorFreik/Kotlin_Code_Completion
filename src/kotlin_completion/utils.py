@@ -2,7 +2,7 @@ import json
 from typing import Dict, Any
 from datasets import load_dataset, DatasetDict
 
-import config
+from . import config
 
 
 def load_kt_dataset() -> DatasetDict:
