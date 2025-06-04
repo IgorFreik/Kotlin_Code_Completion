@@ -1,63 +1,140 @@
-# Code completion for Kotlin
+# Kotlin Code Completion with Phi-1.5
 
+A Python project for fine-tuning language models (specifically Phi-1.5) on code completion tasks for underrepresented programming languages, with a focus on Kotlin.
 
-## Task
+## Overview
 
-This project aims to explore on teh performance improvement of fine-tuning LLMs T LLMs (specifically Phi-1.5) for the code completion task in underrepresented programming languages (specifically Kotlin language). 
+This project explores performance improvements achieved by fine-tuning Large Language Models (LLMs) for code completion in Kotlin, using both a custom Kotlin dataset and Python comparison data from CodeXGLUE.
 
-## Dataset
+## Datasets
 
-There are two datasets used in this project: 
-1. CodeXGLUE dataset used for evaluation of code completion in Python.
-2. Custom Kotlin dataset parsed from the jetbrains/Kotlin repository.
+### 1. Python Dataset
+- **Source**: Microsoft's `code_method_completion` dataset
+- **Purpose**: Baseline comparison and evaluation
+- **Format**: Method completion with docstrings
 
-The datasets adhere to the same format:
-```
-{
-  "input": "<s> from __future__ import absolute_import , division , print_function <EOL> from . _ithreads import AlreadyQuit <EOL> class Quit ( object ) : <EOL>",
-  "labels": " "def __init__ ( self ) :""
-}
-```
+### 2. Kotlin Dataset
+- **Source**: JetBrains/Kotlin GitHub repository
+- **Purpose**: Primary target for fine-tuning
+- **Processing**: Automatic extraction from `.kt` and `.kts` files
 
-## Dataset parsing
+## Evaluation Metrics
 
-You can use the following code snippet to run datasets parsing:
-```shell
-python data_parser.py --type python kotlin
-```
+The project uses two metrics as suggested by CodeXGLUE:
 
-## Evaluation
-
-To evaluate the code completion predictions, two metrics are calculated: Levenstein Edit Similarity and Exact Match score, as suggested by the CodeXGLUE authors.
-
-You can use the following code snippet to run evaluations:
-```shell
-python evaluator.py --answers path/to/answers --predictions path/to/predictions
-```
-
-## Fine tuning pipeline
-
-You can use the following code snippet to run fine tuning:
-
-```shell
-python trainer.py --model_name microsoft/phi-1_5 --num_train_epochs 10 --train_batch_size 2 \
-  --eval_batch_size 2 --learning_rate 0.00001 --gradient_accumulation_steps 2
-```
+1. **Exact Match (EM)**: Percentage of predictions that exactly match the ground truth
+2. **Edit Similarity**: Levenshtein-based fuzzy string matching score
 
 ## Results
 
-### py150
+### Python (CodeXGLUE)
+| Model | Exact Match | Edit Similarity |
+|-------|-------------|-----------------|
+| Phi-1.5 (pre-trained) | 20.3% | 40.35 |
+| Phi-1.5 (fine-tuned) | TBD | TBD |
 
-| Model                                                 |     EM     |  Edit similarity  |
-| ----------------------------------------------------- | :--------: | :---------------: |
-|  Phi-1.5 pre-train                                           |    0.203   |      40.35       |
-| Phi-1.5 fine-tuned                                           |   X   |       X       |
+### Kotlin (Custom Dataset)
+| Model | Exact Match | Edit Similarity |
+|-------|-------------|-----------------|
+| Phi-1.5 (pre-trained) | 9.3% | 45.83 |
+| Phi-1.5 (fine-tuned) | TBD | TBD |
 
-### Custom Kotlin
 
-| Model                                                 |     EM     |  Edit similarity  |
-| ----------------------------------------------------- | :--------: | :---------------: |
-| Phi-1.5 pre-train                                           |    0.093   |      45.832        |
-| Phi-1.5 fine-tuned                                           |    X   |       X       |
+## Project Structure
 
+```
+├── config.py              # Centralized configuration and constants
+├── data_parser.py         # Dataset parsing and preparation
+├── trainer.py             # Model training pipeline
+├── predictor.py           # Inference and prediction generation
+├── evaluator.py           # Evaluation metrics calculation
+├── utils.py               # Utility functions for data loading
+├── requirements.txt       # Python dependencies
+├── data/                  # Dataset storage directory
+├── weights/               # Model weights and checkpoints
+├── predictions/           # Generated predictions
+└── logs/                  # Training logs and TensorBoard data
+```
+
+## Usage
+
+### 1. Dataset Preparation
+
+Parse datasets for training and evaluation:
+
+```bash
+# Parse both Python and Kotlin datasets
+python data_parser.py --type python kotlin
+
+# Parse only Kotlin dataset
+python data_parser.py --type kotlin
+
+# Parse only Python dataset
+python data_parser.py --type python
+```
+
+The datasets follow this format:
+```json
+{
+  "input": "function header() {\n    val x = 10\n    val y =",
+  "labels": " 20"
+}
+```
+
+### 2. Model Training
+
+Fine-tune a model using the prepared datasets:
+
+```bash
+# Basic training with default parameters
+python trainer.py --model_name microsoft/phi-1_5
+
+# Advanced training with custom parameters
+python trainer.py \
+    --model_name microsoft/phi-1_5 \
+    --num_train_epochs 10 \
+    --train_batch_size 4 \
+    --eval_batch_size 4 \
+    --learning_rate 1e-5 \
+    --gradient_accumulation_steps 2
+```
+
+### 3. Generate Predictions
+
+Generate predictions using a trained model:
+
+```bash
+# Using fine-tuned model
+python predictor.py \
+    --model_name microsoft/phi-1_5 \
+    --model_path weights/pytorch_model.bin \
+    --test_size 100
+
+# Using base model only
+python predictor.py \
+    --model_name microsoft/phi-1_5 \
+    --test_size 100
+```
+
+### 4. Evaluation
+
+Evaluate predictions against ground truth:
+
+```bash
+# Evaluate predictions
+python evaluator.py \
+    --answers path/to/ground_truth.json \
+    --predictions path/to/predictions.json \
+    --prediction_format json \
+    --answer_format json
+```
+
+## Configuration
+
+All project settings are centralized in `config.py`. Key configurations include:
+
+- **Dataset paths**: `KT_DS_PATH`, `PY_DS_PATH`
+- **Model settings**: `DEFAULT_MODEL_NAME`, `WEIGHTS_DIR`
+- **Training hyperparameters**: `DEFAULT_LEARNING_RATE`, `DEFAULT_NUM_EPOCHS`
+- **Generation settings**: `DEFAULT_TOKEN_LIMIT`, `DEFAULT_MAX_NEW_TOKENS`
 

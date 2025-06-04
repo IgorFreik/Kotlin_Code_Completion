@@ -1,0 +1,21 @@
+# Core ML libraries
+torch>=1.9.0
+transformers>=4.20.0
+datasets>=2.0.0
+
+# Data processing
+numpy>=1.21.0
+tqdm>=4.62.0
+
+# Evaluation
+fuzzywuzzy>=0.18.0
+python-Levenshtein>=0.12.2
+
+# HTTP requests
+requests>=2.26.0
+
+# Tensorboard for logging
+tensorboard>=2.8.0
+
+# For argument parsing (built-in, but good to note)
+argparse 
